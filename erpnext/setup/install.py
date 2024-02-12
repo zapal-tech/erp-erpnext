@@ -172,24 +172,6 @@ def add_standard_navbar_items():
 			"route": "https://docs.erpnext.com/",
 			"is_standard": 1,
 		},
-		{
-			"item_label": "User Forum",
-			"item_type": "Route",
-			"route": "https://discuss.frappe.io",
-			"is_standard": 1,
-		},
-		{
-			"item_label": "Frappe School",
-			"item_type": "Route",
-			"route": "https://frappe.school?utm_source=in_app",
-			"is_standard": 1,
-		},
-		{
-			"item_label": "Report an Issue",
-			"item_type": "Route",
-			"route": "https://github.com/frappe/erpnext/issues",
-			"is_standard": 1,
-		},
 	]
 
 	current_navbar_items = navbar_settings.help_dropdown
