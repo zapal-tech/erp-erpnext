@@ -145,6 +145,12 @@ erpnext.TransactionController = class TransactionController extends erpnext.taxe
 			});
 		}
 
+		if(this.frm.fields_dict['items'].grid.get_field('batch_no')) {
+			this.frm.set_query('batch_no', 'items', function(doc, cdt, cdn) {
+				return me.set_query_for_batch(doc, cdt, cdn);
+			});
+		}
+
 		if(
 			this.frm.docstatus < 2
 			&& this.frm.fields_dict["payment_terms_template"]
@@ -1503,31 +1509,33 @@ erpnext.TransactionController = class TransactionController extends erpnext.taxe
 	}
 
 	remove_pricing_rule_for_item(item) {
-		let me = this;
-		return this.frm.call({
-			method: "erpnext.accounts.doctype.pricing_rule.pricing_rule.remove_pricing_rule_for_item",
-			args: {
-				pricing_rules: item.pricing_rules,
-				item_details: {
-					"doctype": item.doctype,
-					"name": item.name,
-					"item_code": item.item_code,
-					"pricing_rules": item.pricing_rules,
-					"parenttype": item.parenttype,
-					"parent": item.parent,
-					"price_list_rate": item.price_list_rate
+		if (item.pricing_rules){
+			let me = this;
+			return this.frm.call({
+				method: "erpnext.accounts.doctype.pricing_rule.pricing_rule.remove_pricing_rule_for_item",
+				args: {
+					pricing_rules: item.pricing_rules,
+					item_details: {
+						"doctype": item.doctype,
+						"name": item.name,
+						"item_code": item.item_code,
+						"pricing_rules": item.pricing_rules,
+						"parenttype": item.parenttype,
+						"parent": item.parent,
+						"price_list_rate": item.price_list_rate
+					},
+					item_code: item.item_code,
+					rate: item.price_list_rate,
 				},
-				item_code: item.item_code,
-				rate: item.price_list_rate,
-			},
-			callback: function(r) {
-				if (!r.exc && r.message) {
-					me.remove_pricing_rule(r.message);
-					me.calculate_taxes_and_totals();
-					if(me.frm.doc.apply_discount_on) me.frm.trigger("apply_discount_on");
+				callback: function(r) {
+					if (!r.exc && r.message) {
+						me.remove_pricing_rule(r.message);
+						me.calculate_taxes_and_totals();
+						if(me.frm.doc.apply_discount_on) me.frm.trigger("apply_discount_on");
+					}
 				}
-			}
-		});
+			});
+		}
 	}
 
 	apply_pricing_rule(item, calculate_taxes_and_totals) {
@@ -1631,18 +1639,6 @@ erpnext.TransactionController = class TransactionController extends erpnext.taxe
 			});
 		}
 		return item_list;
-	}
-
-	items_delete() {
-		this.update_localstorage_scanned_data();
-	}
-
-	update_localstorage_scanned_data() {
-		let doctypes = ["Sales Invoice", "Purchase Invoice", "Delivery Note", "Purchase Receipt"];
-		if (this.frm.is_new() && doctypes.includes(this.frm.doc.doctype)) {
-			const barcode_scanner = new erpnext.utils.BarcodeScanner({frm:this.frm});
-			barcode_scanner.update_localstorage_scanned_data();
-		}
 	}
 
 	_set_values_for_item_list(children) {
