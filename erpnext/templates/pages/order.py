@@ -4,6 +4,10 @@
 import frappe
 from frappe import _
 
+from erpnext.accounts.doctype.payment_request.payment_request import (
+	ALLOWED_DOCTYPES_FOR_PAYMENT_REQUEST,
+)
+
 
 def get_context(context):
 	context.no_cache = 1
@@ -34,9 +38,7 @@ def get_context(context):
 	context.available_loyalty_points = 0.0
 	if context.doc.get("customer"):
 		# check for the loyalty program of the customer
-		customer_loyalty_program = frappe.db.get_value(
-			"Customer", context.doc.customer, "loyalty_program"
-		)
+		customer_loyalty_program = frappe.db.get_value("Customer", context.doc.customer, "loyalty_program")
 
 		if customer_loyalty_program:
 			from erpnext.accounts.doctype.loyalty_program.loyalty_program import (
@@ -51,6 +53,7 @@ def get_context(context):
 	context.show_pay_button = (
 		"payments" in frappe.get_installed_apps()
 		and frappe.db.get_single_value("Buying Settings", "show_pay_button")
+		and context.doc.doctype in ALLOWED_DOCTYPES_FOR_PAYMENT_REQUEST
 	)
 	context.show_make_pi_button = False
 	if context.doc.get("supplier"):

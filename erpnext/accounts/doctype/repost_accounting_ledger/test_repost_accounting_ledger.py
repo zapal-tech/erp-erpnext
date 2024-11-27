@@ -9,7 +9,6 @@ from frappe.utils import add_days, nowdate, today
 
 from erpnext.accounts.doctype.payment_entry.payment_entry import get_payment_entry
 from erpnext.accounts.doctype.payment_request.payment_request import make_payment_request
-from erpnext.accounts.doctype.repost_accounting_ledger.repost_accounting_ledger import start_repost
 from erpnext.accounts.doctype.sales_invoice.test_sales_invoice import create_sales_invoice
 from erpnext.accounts.test.accounts_mixin import AccountsTestMixin
 from erpnext.accounts.utils import get_fiscal_year
@@ -130,13 +129,15 @@ class TestRepostAccountingLedger(AccountsTestMixin, FrappeTestCase):
 			cost_center=self.cost_center,
 			rate=100,
 		)
+		fy = get_fiscal_year(today(), company=self.company)
 		pcv = frappe.get_doc(
 			{
 				"doctype": "Period Closing Voucher",
 				"transaction_date": today(),
-				"posting_date": today(),
+				"period_start_date": fy[1],
+				"period_end_date": today(),
 				"company": self.company,
-				"fiscal_year": get_fiscal_year(today(), company=self.company)[0],
+				"fiscal_year": fy[0],
 				"cost_center": self.cost_center,
 				"closing_account_head": self.retained_earnings,
 				"remarks": "test",

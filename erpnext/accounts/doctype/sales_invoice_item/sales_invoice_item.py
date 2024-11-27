@@ -28,6 +28,7 @@ class SalesInvoiceItem(Document):
 		base_rate_with_margin: DF.Currency
 		batch_no: DF.Link | None
 		brand: DF.Data | None
+		company_total_stock: DF.Float
 		conversion_factor: DF.Float
 		cost_center: DF.Link
 		customer_item_code: DF.Data | None
@@ -75,7 +76,7 @@ class SalesInvoiceItem(Document):
 		sales_invoice_item: DF.Data | None
 		sales_order: DF.Link | None
 		serial_and_batch_bundle: DF.Link | None
-		serial_no: DF.SmallText | None
+		serial_no: DF.Text | None
 		service_end_date: DF.Date | None
 		service_start_date: DF.Date | None
 		service_stop_date: DF.Date | None
